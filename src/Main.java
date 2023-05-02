@@ -1,3 +1,9 @@
+// import java.io.DataInputStream;
+// import java.io.DataOutputStream;
+// import java.io.IOException;
+// import java.net.ServerSocket;
+// import java.net.Socket;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -5,7 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Main {
-
 	public static void main(String[] args) {
 		try{
 			ServerSocket server = new ServerSocket(11311);
@@ -29,21 +34,15 @@ public class Main {
 					buff += " real sirrr\r\n\r\n";
 					System.out.printf("Aight, writtin' syre\n");
 					bos.write(buff.getBytes());
-
-
 				}
-
 				System.out.printf("Closin");
 				client.close();
 			}
-//            server.close();
-
-//            System.out.printf("End of life\n");
+			// server.close();
+			// System.out.printf("End of life\n");
 		}
 		catch (IOException ex){
 			System.err.print(ex);
 		}
-
 	}
-
 }
