@@ -1,4 +1,4 @@
-public class HTTPHeader {
+public class ClientRequestMsg {
     /*
 
     Ini untuk nampung hasil parsingan request header
@@ -9,10 +9,16 @@ public class HTTPHeader {
     public String path;
     public String connectionType;
 
-    public HTTPHeader(String host, String method, String path) {
+    public ClientRequestMsg(String host, String method, String path) {
         this.host = host;
         this.method = method;
         this.path = path;
+    }
+
+    public ClientRequestMsg(){
+        this.host = "localhost";
+        this.method = "GET";
+        this.path = "/";
     }
 
     public String getHost() {

@@ -9,7 +9,7 @@ public class Main {
 	public static void main(String[] args) {
 		Vector<ClientHandler> ClientList = new Vector<>();
 		try{
-			ServerSocket server = new ServerSocket(11311);
+			ServerSocket server = new ServerSocket(80);
 			while(true) {
 				System.out.printf("Start acceptin' syre\n");
 				Socket client = server.accept();
@@ -20,6 +20,7 @@ public class Main {
 				ClientList.add(clientHandler);
 
 				System.out.printf("Now there are %d clients\n", ClientList.size());
+				// ngapus yang udah selesai (tbi)
 			}
 //            server.close();
 		}
