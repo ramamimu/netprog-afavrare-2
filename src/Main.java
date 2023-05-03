@@ -1,45 +1,27 @@
-// import java.io.DataInputStream;
-// import java.io.DataOutputStream;
-// import java.io.IOException;
-// import java.net.ServerSocket;
-// import java.net.Socket;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Vector;
 
 public class Main {
 	public static void main(String[] args) {
+		Vector<ClientHandler> ClientList = new Vector<>();
 		try{
 			ServerSocket server = new ServerSocket(11311);
 			while(true) {
 				System.out.printf("Start acceptin' syre\n");
 				Socket client = server.accept();
 
-				System.out.printf("Hell ye ma fren, we got ourself a client, hup top\n");
-				DataInputStream bis = new DataInputStream(client.getInputStream());
-				DataOutputStream bos = new DataOutputStream(client.getOutputStream());
+				// buat thread handle client ini
+				ClientHandler clientHandler = new ClientHandler(client, ClientList.size());
+				clientHandler.start();
+				ClientList.add(clientHandler);
 
-				System.out.printf("Aight, readin' oll of the um uh bytes yea\n");
-				while (true) {
-					String buff = bis.readLine();
-
-					System.out.printf("Ey got: %s\n", buff);
-
-					if (buff.equals("stop")) {
-						break;
-					}
-					buff += " real sirrr\r\n\r\n";
-					System.out.printf("Aight, writtin' syre\n");
-					bos.write(buff.getBytes());
-				}
-				System.out.printf("Closin");
-				client.close();
+				System.out.printf("Now there are %d clients\n", ClientList.size());
 			}
-			// server.close();
-			// System.out.printf("End of life\n");
+//            server.close();
 		}
 		catch (IOException ex){
 			System.err.print(ex);
