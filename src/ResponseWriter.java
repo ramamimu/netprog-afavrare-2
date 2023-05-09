@@ -8,13 +8,22 @@ public class ResponseWriter {
     dia generate header like status ok, content length, type, etc sama ngirim si file yang diperluin/yang di generate
      */
     public Socket client;
+    public DataOutputStream bos;
+
+
     public ResponseWriter(Socket client){
         this.client = client;
+        try{
+            DataOutputStream bos = new DataOutputStream(this.client.getOutputStream());
+        }
+        catch (IOException ex){
+            System.err.print(ex);
+        }
     }
 
     public void writeResponse(){
         try{
-            DataOutputStream bos = new DataOutputStream(this.client.getOutputStream());
+
             String response = "HTTP/1.0 200 OK\r\n";
             response+="content-length:22\r\n"; // 22 panjang <html>MantapBoi</html>
             response += "\r\n";

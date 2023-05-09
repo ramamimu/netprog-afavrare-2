@@ -1,3 +1,6 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 public class ClientRequestReader {
@@ -10,14 +13,26 @@ public class ClientRequestReader {
      */
 
     public Socket client;
+    public DataInputStream bis;
 
     public ClientRequestReader(Socket client){
-        this.client = client;
+//        this.client = client;
+//        try{
+//            this.bis = new DataInputStream(this.client.getInputStream());
+//        }
+//        catch (IOException ex){
+//            throw(ex);
+//        }
+
+
     }
 
     public ClientRequestMsg readRequest(){
 
         // loop baca request
+
+
+
         return new ClientRequestMsg();
     }
 

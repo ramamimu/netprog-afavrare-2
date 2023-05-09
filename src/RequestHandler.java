@@ -20,6 +20,7 @@ public class RequestHandler extends Thread {
 // public class RequestHandler {
     Socket socket;
     String clientRequest;
+    ClientRequestMsg requestMsg;
     Lock lock;
 
     /**
@@ -31,6 +32,7 @@ public class RequestHandler extends Thread {
         socket = s;
         // locker for multi-threading
         this.lock = new ReentrantLock();
+        this.requestMsg = new ClientRequestMsg();
     }
 
     /**
@@ -43,13 +45,42 @@ public class RequestHandler extends Thread {
 
             this.clientRequest = "";
             String clientRequest = "";
+
+            // read the method, path, and the http version (not taht it matter)
+            clientRequest = reader.readLine();
+            System.out.printf("got %s\n", clientRequest);
+            if(clientRequest.contains("GET")){
+                this.requestMsg.method = "GET";
+            }else if(clientRequest.contains("POST")){
+                this.requestMsg.method = "POST";
+            }else{
+                this.requestMsg.method = "Uknown";
+            }
+            System.out.printf("Method is %s\n", this.requestMsg.method);
+
+            int startSpaceId = clientRequest.indexOf(" ");
+            int lastSpaceId = clientRequest.indexOf(" ", startSpaceId+1);
+            String path = clientRequest.substring(startSpaceId, lastSpaceId);
+            this.requestMsg.path = path.trim();
+            System.out.printf("We got path %s\n", this.requestMsg.path);
+
+
             while ((clientRequest = reader.readLine()) != null) {
-                if (this.clientRequest.equals("")) {
-                    this.clientRequest  = clientRequest;
+                if(clientRequest.toLowerCase().contains("host:")){
+                    String host = clientRequest.substring(5).trim();
+                    System.out.printf("te host is %s \n", host);
+                    this.requestMsg.host = host;
                 }
-                if (clientRequest.equals("")) {
+                else if(clientRequest.toLowerCase().contains("connection:")){
+                    String connection = clientRequest.substring(11).trim();
+                    this.requestMsg.connectionType =connection;
+                    System.out.printf("Connection is %s \n", connection);
+                }
+
+                if(clientRequest.equals("")){
                     break;
                 }
+
             }
 
             // lock.lock();
@@ -58,20 +89,21 @@ public class RequestHandler extends Thread {
             PrintStream printer = new PrintStream(socket.getOutputStream());
 
             // Get the request file path
-            String req = this.clientRequest.substring(4, this.clientRequest.length()-9).trim();
-
+//            String req = this.clientRequest.substring(4, this.clientRequest.length()-9).trim();
+//            String req = path.trim();
+//            System.out.printf("We obtain %s from %s\n", req, this.clientRequest);
             // Handle requests
-            if (req.indexOf(".")>-1) { // Request for single file
+            if (this.requestMsg.path.indexOf(".")>-1) { // Request for single file
                 lock.lock();
                 System.out.println("MASUK 1 ");
                 lock.unlock();
-                handleFileRequest(req, printer);
+                handleFileRequest(this.requestMsg.path, printer);
             }
             else { 
                 lock.lock();
                 System.out.println("MASUK 2 ");
                 lock.unlock();
-                handleExploreRequest(req, printer);
+                handleExploreRequest(this.requestMsg.path, printer);
             }
             /*
              * This timer to show that our code is multithread
