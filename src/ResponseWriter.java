@@ -24,7 +24,7 @@ public class ResponseWriter {
             bos.write(response.getBytes());
             // System.out.printf(response);
             // System.out.printf("Sudah ke kirim\n");
-//            this.client.close();
+            // this.client.close();
         }
         catch (IOException ex){
             System.err.print(ex);
