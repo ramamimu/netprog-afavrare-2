@@ -22,7 +22,8 @@ public class ResponseWriter {
             response += "<html>MantapBoi</html>";
             response+= "\r\n";
             bos.write(response.getBytes());
-            System.out.printf("Sudah ke kirim\n");
+            // System.out.printf(response);
+            // System.out.printf("Sudah ke kirim\n");
 //            this.client.close();
         }
         catch (IOException ex){

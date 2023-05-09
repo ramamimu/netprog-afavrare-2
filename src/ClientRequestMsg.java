@@ -8,6 +8,7 @@ public class ClientRequestMsg {
     public String method;
     public String path;
     public String connectionType;
+    public String httpVersion;
 
     public ClientRequestMsg(String host, String method, String path) {
         this.host = host;
@@ -51,5 +52,13 @@ public class ClientRequestMsg {
 
     public void setConnectionType(String connectionType) {
         this.connectionType = connectionType;
+    }
+
+    public String getHttpVersion(){
+        return this.httpVersion;
+    }
+
+    public void setHttpVersion(String httpVersion){
+        this.httpVersion = httpVersion;
     }
 }
