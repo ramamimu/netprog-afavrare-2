@@ -1,18 +1,8 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,6 +12,7 @@ public class RequestHandler extends Thread {
     String clientRequest;
     ClientRequestMsg requestMsg;
     Lock lock;
+    Map<String, String> hostRootMap;
 
     /**
      * Construct
@@ -33,6 +24,45 @@ public class RequestHandler extends Thread {
         // locker for multi-threading
         this.lock = new ReentrantLock();
         this.requestMsg = new ClientRequestMsg();
+        this.hostRootMap = new HashMap<>();
+
+        // read config
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("config/config.txt"));
+            String line = "empty";
+            String curhost = "";
+            String curroot = "";
+            int counter = 1;
+            while (true) {
+                line = reader.readLine();
+                if(line.equals("END")){
+                    break;
+                }
+                if(line.startsWith("#") || line.equals("")){
+                    continue; // skip line comment sama newline kosong
+                }
+
+                if(counter==1){
+                    // baca host
+                    curhost = line.substring(5);
+
+                }
+                else if(counter == 2){
+                    curroot = line.substring(5);
+
+                }
+                else{
+                    this.hostRootMap.put(curhost, curroot);
+                    counter=0;
+//                    System.out.printf("Obtain domain %s --> %s\n", curhost, curroot);
+                }
+
+                counter++;
+            }
+            reader.close();
+        } catch (IOException ex) {
+            System.err.print(ex);
+        }
     }
 
     /**
@@ -132,8 +162,12 @@ public class RequestHandler extends Thread {
     private void handleFileRequest(String req, PrintStream printer) throws FileNotFoundException, IOException {
         // Get the root folder of the webserver
         String rootDir = getRootFolder();
+        String websiteRoot = this.hostRootMap.get(this.requestMsg.host);
         // Get the real file path
-        String path = Paths.get(rootDir, req).toString();
+//        String path = Paths.get(rootDir, websiteRoot, req).toString();
+        String path = rootDir + File.separator + websiteRoot + File.separator + req;
+        System.out.printf("PATH %s\n", path);
+
         // Try to open the file
         File file = new File(path);
         if (!file.exists() || !file.isFile()) { // If not exists or not a file
@@ -167,7 +201,10 @@ public class RequestHandler extends Thread {
         // Get the root folder of the webserver
         String rootDir = getRootFolder();
         // Get the real file path
-        String path = Paths.get(rootDir, req).toString();
+//        String path = Paths.get(rootDir, req).toString();
+        String websiteRoot = this.hostRootMap.get(this.requestMsg.host);
+        String path = rootDir + File.separator + websiteRoot + File.separator + req;
+        System.out.printf("PATH %s\n", path);
         // Try to open the directory
         File file = new File (path) ;
         if (!file.exists()) { // If the directory does not exist
@@ -179,6 +216,19 @@ public class RequestHandler extends Thread {
             // Get all the files and directory under current directory
             File[] files = file.listFiles();
             Arrays.sort(files);
+
+            // detect index.html
+            for (File f: files) {
+                if(f.getName().toLowerCase().equals("index.html")){
+                    try{
+                        handleFileRequest(req + File.separator + f.getName(), printer);
+                    }
+                    catch (IOException e){
+                        System.err.print(e);
+                    }
+                    return;
+                }
+            }
             
             // Build file/directory structure in html format
             StringBuilder sbDirHtml = new StringBuilder();

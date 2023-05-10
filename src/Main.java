@@ -20,6 +20,7 @@ public class Main {
 				// ClientList.add(clientHandler);
 
 				RequestHandler requestHandler = new RequestHandler(client);
+				System.out.printf("Got new client\n");
 				requestHandler.start();
 				/*
 				 * Debugger multithreaded request handler
