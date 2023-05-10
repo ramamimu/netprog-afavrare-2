@@ -1,4 +1,11 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -98,7 +105,7 @@ public class RequestHandler extends Thread {
             while ((clientRequest = reader.readLine()) != null) {
                 if(clientRequest.toLowerCase().contains("host:")){
                     String host = clientRequest.substring(5).trim();
-                    System.out.printf("te host is %s \n", host);
+                    System.out.printf("the host is %s \n", host);
                     this.requestMsg.host = host;
                 }
                 else if(clientRequest.toLowerCase().contains("connection:")){
@@ -113,25 +120,18 @@ public class RequestHandler extends Thread {
 
             }
 
-            // lock.lock();
-            // System.out.println("inner req: " + this.clientRequest);
-            // lock.unlock();
             PrintStream printer = new PrintStream(socket.getOutputStream());
 
-            // Get the request file path
-//            String req = this.clientRequest.substring(4, this.clientRequest.length()-9).trim();
-//            String req = path.trim();
-//            System.out.printf("We obtain %s from %s\n", req, this.clientRequest);
             // Handle requests
             if (this.requestMsg.path.indexOf(".")>-1) { // Request for single file
                 lock.lock();
-                System.out.println("MASUK 1 ");
+                System.out.println("into file request");
                 lock.unlock();
                 handleFileRequest(this.requestMsg.path, printer);
             }
             else { 
                 lock.lock();
-                System.out.println("MASUK 2 ");
+                System.out.println("into folder request");
                 lock.unlock();
                 handleExploreRequest(this.requestMsg.path, printer);
             }
@@ -209,11 +209,8 @@ public class RequestHandler extends Thread {
         File file = new File (path) ;
         if (!file.exists()) { // If the directory does not exist
             printer.println("No such resource:" + req);
-            // LogUtil.write(">> No such resource:" + req);
         }
         else { // If exists
-            // LogUtil.write(">> Explore the content under folder: " + file.getName());
-            // Get all the files and directory under current directory
             File[] files = file.listFiles();
             Arrays.sort(files);
 
@@ -229,7 +226,7 @@ public class RequestHandler extends Thread {
                     return;
                 }
             }
-            
+
             // Build file/directory structure in html format
             StringBuilder sbDirHtml = new StringBuilder();
             // Title line
@@ -262,7 +259,6 @@ public class RequestHandler extends Thread {
             // Build lines for directories
             List<File> folders = getFileByType(files, true);
             for (File folder: folders) {
-                // LogUtil.write(">>> Directory: " + folder.getName());
                 sbDirHtml.append("<tr>");
                 sbDirHtml.append("  <td><img src=\""+buildImageLink(req,"images/folder.png")+"\"></img><a href=\""+buildRelativeLink(req, folder.getName())+"\">"+folder.getName()+"</a></td>");
                 sbDirHtml.append("  <td>" + getFormattedDate(folder.lastModified()) + "</td>");
@@ -272,7 +268,6 @@ public class RequestHandler extends Thread {
             // Build lines for files
             List<File> fileList = getFileByType(files, false);
             for (File f: fileList) {
-                // LogUtil.write(">>> File: " + f.getName());
                 sbDirHtml.append("<tr>");
                 sbDirHtml.append("  <td><img src=\""+buildImageLink(req, getFileImage(f.getName()))+"\" width=\"16\"></img><a href=\""+buildRelativeLink(req, f.getName())+"\">"+f.getName()+"</a></td>");
                 sbDirHtml.append("  <td>" + getFormattedDate(f.lastModified()) + "</td>");
@@ -320,7 +315,7 @@ public class RequestHandler extends Thread {
         sbHtml.append(" table { width:50%; } ");
         sbHtml.append(" th, td { padding: 3px; text-align: left; }");
         sbHtml.append("</style>");
-        sbHtml.append("<title>My Web Server</title>");
+        sbHtml.append("<title>Netprog Afrare</title>");
         sbHtml.append("</head>");
         sbHtml.append("<body>");
         if (header != null && !header.isEmpty()) {
