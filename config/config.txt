@@ -1,0 +1,15 @@
+host=helloprogjar.com
+root=websites/helloprogjar
+#ip di nolin dulu
+ip=0
+
+host=simplewebsite.xyz
+root=websites/simplewebsite
+#ip dinolin dulu juga
+ip=0
+
+host=localhost
+# ganti ini jadi / biar normal
+root=websites/helloprogjar
+ip=0
+END
