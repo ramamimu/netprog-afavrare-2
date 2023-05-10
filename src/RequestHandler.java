@@ -78,7 +78,7 @@ public class RequestHandler extends Thread {
 
             // read the method, path, and the http version (not taht it matter)
             clientRequest = reader.readLine();
-            System.out.printf("got %s\n", clientRequest);
+            System.out.printf("got [%s]\n", clientRequest);
             if(clientRequest.contains("GET")){
                 this.requestMsg.method = "GET";
             }else if(clientRequest.contains("POST")){
@@ -156,6 +156,9 @@ public class RequestHandler extends Thread {
         // Get the root folder of the webserver
         String rootDir = getRootFolder();
         String websiteRoot = this.hostRootMap.get(this.requestMsg.host);
+        if(websiteRoot == null){
+            websiteRoot = "";
+        }
         // Get the real file path
 //        String path = Paths.get(rootDir, websiteRoot, req).toString();
         String path = rootDir + File.separator + websiteRoot + File.separator + req;
@@ -196,6 +199,9 @@ public class RequestHandler extends Thread {
         // Get the real file path
 //        String path = Paths.get(rootDir, req).toString();
         String websiteRoot = this.hostRootMap.get(this.requestMsg.host);
+        if(websiteRoot == null){
+            websiteRoot = "";
+        }
         String path = rootDir + File.separator + websiteRoot + File.separator + req;
         System.out.printf("PATH %s\n", path);
         // Try to open the directory
