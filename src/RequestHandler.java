@@ -139,7 +139,9 @@ public class RequestHandler extends Thread {
              
              */
             
-             // socket.close();
+             if(!this.requestMsg.connectionType.equals("keep-alive")){
+                 socket.close();
+             }
         }
         catch(IOException ex){
             // Handle the exception
